@@ -23,13 +23,11 @@ while IFS= read -r line; do
 			else
 				# first get the actual variable names
 				mapfile -t variable_names < <(grep --color=none -oP '(?<={).*?(?=})' <<< "${line}")
-				rm -f /tmp/duck
-				echo "${line}" > /tmp/duck
+				looped_line="${line}"
 				for i in "${variable_names[@]}"; do
-					sed -i "s/{$i}/${vars[$i]}/g" /tmp/duck
+					looped_line=$(sed "s/{$i}/${vars[$i]}/g" <<< $looped_line)
 				done
-				final_line="$(tail -n 1 /tmp/duck)"
-				printf '%s\n' "${final_line#print }"
+				printf '%s\n' "${looped_line#print }"
 			fi
 		else
 			# normal print statement

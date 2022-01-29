@@ -19,9 +19,9 @@ function errorfmt() {
 keys=('#' 'print' 'var' 'unset' 'if')
 while IFS= read -r line; do
 	# get first key in line: "foo bar baz" -> "foo"
-	value="$(awk '{ print $1 }' <<< "${line}")"
+	value="${line%% *}"
 	# if line does not contain value and value is not empty (newline), error out
-	if [[ ! " ${keys[*]} " =~ " ${value} " ]] && [[ ! ${value:-null} = null ]]; then
+	if [[ ! " ${keys[*]} " =~ " ${value} " ]] && [[ ! ${value:-null} == null ]]; then
 		errorfmt "Line ($line) is not a valid command"
 		exit 1
 	fi
@@ -32,7 +32,7 @@ while IFS= read -r line; do
 	# print statement
 	if [[ "${line}" =~ ^print ]]; then
 		# if line contains a {}, which means a variable is used
-		if grep --color=none '{' <<< "${line}" >/dev/null 2>&1; then
+		if [[ "${line}" == *"{"* ]]; then
 			# match for both {}
 			if grep --color=none -vE '{.*}' <<< "${line}" 2>/dev/null; then
 				errorfmt "Line does not contain an equal number of brackets"

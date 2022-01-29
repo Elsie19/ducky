@@ -8,3 +8,7 @@ print yeet
 var cheese awesome
 
 print cheese is {cheese}
+
+var ducksOnDuckHoodie 259
+
+print there are {ducksOnDuckHoodie} on hepnos shirt, btw {cheese}

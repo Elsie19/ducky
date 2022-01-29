@@ -1,14 +1,11 @@
 #!/bin/bash
 set -eu
+shopt -s gnu_errfmt
 
 INPUT="${1}"
 unset vars
 # associative arrays go brr
 declare -A vars
-
-function recall_var() {
-	printf '%s\n' "${vars["${1}"]}"
-}
 
 while IFS= read -r line; do
 	# yoinks comments
@@ -30,6 +27,7 @@ while IFS= read -r line; do
 				replace="$(sed "s/{$variable_name}/${vars[${variable_name}]}/g" <<< "${line}")"
 				# print out our hard work
 				printf '%s\n' "${replace}"
+				unset variable_name replace
 			fi
 		else
 			# normal print statement
@@ -41,7 +39,7 @@ while IFS= read -r line; do
 		key="$(echo "$line" | awk '{print $2}')"
 		value="$(echo "$line" | awk '{print $3}')"
 		vars[${key}]=${value}
-		unset key
+		unset key value
 	fi
 
 done < "${INPUT}"

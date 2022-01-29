@@ -1,11 +1,21 @@
 #!/bin/bash
 set -eu
 shopt -s gnu_errfmt
+export LC_ALL=C
 
 INPUT="${1}"
+
 unset vars
 # associative arrays go brr
 declare -A vars
+
+function replace_var() {
+	true
+}
+
+function errorfmt() {
+	printf '%s\n' "ERROR: $*"
+}
 
 while IFS= read -r line; do
 	# yoinks comments
@@ -15,19 +25,20 @@ while IFS= read -r line; do
 	# print statement
 	if [[ "${line}" =~ ^print ]]; then
 		# if line contains a {}, which means a variable is used
-		if grep '{' <<< "${line}" >/dev/null 2>&1; then
+		if grep --color=none '{' <<< "${line}" >/dev/null 2>&1; then
 			# match for both {}
-			if grep -vE '{.*}' <<< "${line}" 2>/dev/null; then
-				printf '%s\n' "ERROR: Line ($line) does not contain matching paranthese"
+			if grep --color=none -vE '{.*}' <<< "${line}" 2>/dev/null; then
+				errorfmt "Line does not contain an equal number of brackets"
 				exit 1
 			else
 				# first get the actual variable names
 				mapfile -t variable_names < <(grep --color=none -oP '(?<={).*?(?=})' <<< "${line}")
 				looped_line="${line}"
 				for i in "${variable_names[@]}"; do
-					looped_line=$(sed "s/{$i}/${vars[$i]}/g" <<< $looped_line)
+					looped_line="$(sed "s/{$i}/${vars[$i]}/g" <<< "${looped_line}")"
 				done
 				printf '%s\n' "${looped_line#print }"
+				unset variable_names looped_line
 			fi
 		else
 			# normal print statement
@@ -36,10 +47,27 @@ while IFS= read -r line; do
 	fi
 
 	if [[ "${line}" =~ ^var ]]; then
-		key="$(echo "$line" | awk '{print $2}')"
-		value="$(echo "$line" | awk '{print $3}')"
-		vars[${key}]=${value}
+		key="$(awk '{print $2}' <<< "${line}")"
+		value="$(awk '{print $3}' <<< "${line}")"
+		vars["${key}"]="${value}"
 		unset key value
 	fi
 
+	if [[ "${line}" =~ ^unset ]]; then
+		key="${line#unset }"
+		set +u
+		if [[ -z ${vars[$key]} ]]; then
+			errorfmt "$key does not exist"
+			exit 1
+		fi
+		set -u
+		unset -v "vars[$key]"
+	fi
+
+	if [[ ${line} =~ ^if ]]; then
+		if grep --color=none -vE '(.*)' <<< "${line}" 2>/dev/null; then
+			errorfmt "Line does not contain an equal number of brackets"
+			exit 1
+		fi
+	fi
 done < "${INPUT}"

@@ -11,4 +11,12 @@ print cheese is {cheese}
 
 var ducksOnDuckHoodie 259
 
+# this will subsitute variables
 print there are {ducksOnDuckHoodie} on hepnos shirt, btw {cheese}
+
+var cheese not_awesome
+print cheese is {cheese}
+
+if {cheese} == not_awesome ): then
+	print potatoes are good
+done

@@ -16,7 +16,7 @@ function replace_var() {
 function errorfmt() {
 	printf '%s\n' "ERROR: $*"
 }
-
+beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
 while IFS= read -r line; do
 	# yoinks comments
 	if [[ "${line}" =~ ^#* ]]; then

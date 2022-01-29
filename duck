@@ -16,8 +16,15 @@ function replace_var() {
 function errorfmt() {
 	printf '%s\n' "ERROR: $*"
 }
-beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
+keys=('#' 'print' 'var' 'unset' 'if')
 while IFS= read -r line; do
+	# get first key in line: "foo bar baz" -> "foo"
+	value="$(awk '{ print $1 }' <<< "${line}")"
+	# if line does not contain value and value is not empty (newline), error out
+	if [[ ! " ${keys[*]} " =~ " ${value} " ]] && [[ ! ${value:-null} = null ]]; then
+		errorfmt "Line ($line) is not a valid command"
+		exit 1
+	fi
 	# yoinks comments
 	if [[ "${line}" =~ ^#* ]]; then
 		true

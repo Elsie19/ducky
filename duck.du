@@ -17,6 +17,4 @@ print there are {ducksOnDuckHoodie} on hepnos shirt, btw {cheese}
 var cheese not_awesome
 print cheese is {cheese}
 
-if {cheese} == not_awesome ): then
-	print potatoes are good
-done
+fasdjf

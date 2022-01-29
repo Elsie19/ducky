@@ -1,0 +1,9 @@
+to replace a var like
+```
+var good_or_bad good
+print potatoes are {good_or_bad}
+```
+
+```
+print potatoes are ${vars[good_or_bad]}
+```

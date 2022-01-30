@@ -1,3 +1,0 @@
-if ( {potato} = good ): then
-	print potatoes are good
-done

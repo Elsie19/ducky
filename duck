@@ -2,6 +2,8 @@
 set -eu
 shopt -s gnu_errfmt
 export LC_ALL=C
+bold=$(tput bold)
+normal=$(tput sgr0)
 
 INPUT="${1}"
 
@@ -22,7 +24,7 @@ while IFS= read -r line; do
 	value="${line%% *}"
 	# if line does not contain value and value is not empty (newline), error out
 	if [[ ! " ${keys[*]} " =~ " ${value} " ]] && [[ ! ${value:-null} == null ]]; then
-		errorfmt "Line ($line) is not a valid command"
+		errorfmt "(${bold}$line${normal}) is not a valid command"
 		exit 1
 	fi
 	# yoinks comments
@@ -73,7 +75,7 @@ while IFS= read -r line; do
 
 	if [[ ${line} =~ ^if ]]; then
 		if grep --color=none -vE '(.*)' <<< "${line}" 2>/dev/null; then
-			errorfmt "Line does not contain an equal number of brackets"
+			errorfmt "(${bold}$line${normal}) does not contain an equal number of brackets"
 			exit 1
 		fi
 	fi

@@ -18,7 +18,7 @@ function replace_var() {
 function errorfmt() {
 	printf '%s\n' "ERROR: $*"
 }
-keys=('#' 'print' 'var' 'unset' 'if')
+keys=('#' 'print' 'var' 'unset' 'if' 'exit')
 while IFS= read -r line; do
 	# get first key in line: "foo bar baz" -> "foo"
 	value="${line%% *}"
@@ -73,6 +73,9 @@ while IFS= read -r line; do
 		unset -v "vars[$key]"
 	fi
 
+	if [[ ${line} =~ ^exit ]]; then
+		exit "${line#exit }"
+	fi
 	if [[ ${line} =~ ^if ]]; then
 		if grep --color=none -vE '(.*)' <<< "${line}" 2>/dev/null; then
 			errorfmt "(${bold}$line${normal}) does not contain an equal number of brackets"

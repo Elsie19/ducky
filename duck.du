@@ -16,6 +16,10 @@ print there are {ducksOnDuckHoodie} ducks on hepnos shirt, btw {cheese}
 
 var cheese not_awesome
 print cheese is {cheese}
+unset cheese
 
 # this will fail
 fasdjf
+
+# we'll never reach this but you can also exit
+exit 120
